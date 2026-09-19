@@ -1,7 +1,16 @@
 numpy>=1.24.0
 Pillow>=10.0.0
+scipy>=1.10.0
+trimesh>=4.0.0
+fast_simplification>=0.2.0
+xatlas>=0.0.8
+moderngl>=5.8.2
+rembg>=2.0.50
 
-# Opcionales pero recomendados para estimación de profundidad con IA (MiDaS)
+# PyTorch e inferencia 3D
 torch>=2.0.0
 torchvision>=0.15.0
 timm>=0.9.0
+transformers>=4.35.0
+einops>=0.7.0
+omegaconf>=2.3.0

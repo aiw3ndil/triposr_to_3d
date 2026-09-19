@@ -1,0 +1,20 @@
+# Virtual environment
+venv/
+.venv/
+
+# Output directories
+output/
+ouput/
+output_triposr/
+
+# Root image files
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.bmp
+/*.gif
+
+# Python artifacts
+__pycache__/
+*.py[cod]
