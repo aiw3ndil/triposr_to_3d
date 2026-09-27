@@ -1,79 +1,79 @@
 # script-to-3d
 
-Herramientas para convertir imágenes 2D en modelos 3D (OBJ/GLB/PLY).
+Tools to convert 2D images into 3D models (OBJ/GLB/PLY).
 
-Cuenta con dos métodos:
-1. **TripoSR (IA Generativa 360°)**: Reconstruye la geometría completa en 360 grados y hornea mapas de texturas UV automáticos a partir de una sola foto.
-2. **Estimación de Relieve 2.5D (`image_to_3d.py`)**: Genera relieve y volumen orgánico mediante descomposición multiescala de frecuencias y mapas de profundidad.
+Features two methods:
+1. **TripoSR (360° Generative AI)**: Reconstructs full 360-degree geometry and bakes automatic UV texture maps from a single photograph.
+2. **2.5D Relief Estimation (`image_to_3d.py`)**: Generates organic relief and volume using multi-scale frequency decomposition and depth maps.
 
 ---
 
-## 1. Método TripoSR (Reconstrucción 3D Completa 360°)
+## 1. TripoSR Method (Full 360° 3D Reconstruction)
 
-Utiliza la red neuronal LRM de **Stability AI** y **Tripo AI**.
+Powered by the LRM neural network from **Stability AI** and **Tripo AI**.
 
-### Activación del entorno
+### Environment Activation
 
 ```bash
 source venv/bin/activate
 ```
 
-### Uso básico
+### Basic Usage
 
 ```bash
 python triposr_to_3d.py monedas.jpeg
 ```
 
-Esto generará la carpeta `output_triposr/monedas/` con:
-- `modelo_3d.obj` (o `.glb`): Malla 3D completa en 360°.
-- `texture.png`: Atlas de texturas UV en alta definición con reproyección frontal fotográfica.
-- `normal.png`: Mapa de normales tangentes multi-escala (macro-volumen, biseles y micro-relieve).
-- `ao.png`: Mapa de Oclusión Ambiental (sombras de contacto y cavidades).
-- `roughness.png`: Mapa de rugosidad de superficie.
-- `metallic.png`: Mapa de respuesta metálica.
-- `modelo_3d.mtl`: Definición de materiales completa con canales PBR enlazados.
+This will generate the `output_triposr/monedas/` folder containing:
+- `modelo_3d.obj` (or `.glb`): Full 360° 3D mesh.
+- `texture.png`: High-definition UV texture atlas with frontal photographic reprojection.
+- `normal.png`: Multi-scale tangent normal map (macro-volume, bevels, and micro-relief).
+- `ao.png`: Ambient Occlusion map (contact shadows and cavities).
+- `roughness.png`: Surface roughness map.
+- `metallic.png`: Metallic response map.
+- `modelo_3d.mtl`: Full material definition with linked PBR channels.
 
-### Opciones avanzadas de definición y realismo
+### Advanced Quality and Realism Options
 
 ```bash
-# Exportar en formato GLB con materiales PBR completos integrados
+# Export in GLB format with integrated full PBR materials
 python triposr_to_3d.py monedas.jpeg --format glb
 
-# Máxima definición geométrica (Marching Cubes a 384 y textura 2048)
+# Maximum geometric definition (Marching Cubes at 384 and 2048 texture)
 python triposr_to_3d.py sword.png --mc-resolution 384 --texture-resolution 2048
 
-# Incrementar el relieve del mapa de normales
+# Increase normal map relief intensity
 python triposr_to_3d.py monedas.jpeg --normal-strength 3.0
 
-# Para imágenes que ya tienen fondo transparente o neutro
+# For images that already have a transparent or neutral background
 python triposr_to_3d.py objeto_sin_fondo.png --no-remove-bg
 
-# Generar además un vídeo de rotación 360°
+# Also generate a 360° orbital rotation video
 python triposr_to_3d.py monedas.jpeg --render-video
 ```
 
-| Parámetro | Descripción | Default |
+| Parameter | Description | Default |
 |-----------|-------------|---------|
-| `image` | Ruta de la imagen (o imágenes) de entrada | (obligatorio) |
-| `--output-dir`, `-o` | Carpeta de salida | `output_triposr` |
-| `--format` | Formato de salida (`obj` o `glb`) | `obj` |
-| `--mc-resolution` | Resolución Marching Cubes (256, 320 o 384) | `320` |
-| `--texture-projection` | Reproyección fotográfica frontal de alta definición | `True` |
-| `--normal-strength` | Intensidad del mapa de normales PBR multi-escala | `2.0` |
-| `--smooth-iterations` | Iteraciones Taubin (4 conserva aristas sin redondearlas) | `4` |
-| `--max-faces` | Límite de caras tras MC mediante decimation cuadrático | `60000` |
-| `--texture-resolution` | Resolución del mapa de textura UV (1024 o 2048) | `1024` |
-| `--metallic-factor` | Factor base metálico PBR (0.0 a 1.0) | `0.20` |
-| `--roughness-factor` | Factor base de rugosidad PBR (0.1 a 0.9) | `0.55` |
-| `--enhance-image` | Realce de enfoque (Unsharp Mask) antes de inferencia | `True` |
-| `--chunk-size` | Chunk para optimizar VRAM (4096 para 4GB) | `4096` |
-| `--render-video` | Genera vídeo MP4 en órbita 360° | `False` |
+| `image` | Path to the input image (or images) | (required) |
+| `--output-dir`, `-o` | Output directory | `output_triposr` |
+| `--format` | Output format (`obj` or `glb`) | `obj` |
+| `--mc-resolution` | Marching Cubes resolution (256, 320, or 384) | `320` |
+| `--texture-projection` | High-definition frontal photographic reprojection | `True` |
+| `--normal-strength` | Multi-scale PBR normal map intensity | `2.0` |
+| `--smooth-iterations` | Taubin smoothing iterations (4 preserves sharp edges without rounding) | `4` |
+| `--max-faces` | Post-MC face limit via quadric decimation | `60000` |
+| `--texture-resolution` | UV texture map resolution (1024 or 2048) | `1024` |
+| `--metallic-factor` | Base PBR metallic factor (0.0 to 1.0) | `0.20` |
+| `--roughness-factor` | Base PBR roughness factor (0.1 to 0.9) | `0.55` |
+| `--enhance-image` | Sharpening enhancement (Unsharp Mask) prior to inference | `True` |
+| `--chunk-size` | Chunk size to optimize VRAM (4096 for 4GB) | `4096` |
+| `--render-video` | Generates a 360° orbiting MP4 video | `False` |
 
 ---
 
-## 2. Método Relieve 2.5D (`image_to_3d.py`)
+## 2. 2.5D Relief Method (`image_to_3d.py`)
 
-Genera una malla 3D extrusionada/inflada a partir de los gradientes de luminancia y frecuencias:
+Generates an extruded/inflated 3D mesh from luminance gradients and frequencies:
 
 ```bash
 python image_to_3d.py monedas.jpeg --output modelo.obj --scale 150.0 --downsample 2
